@@ -1,14 +1,18 @@
 import maze
-# the rat to be controlled
 
-def getPos():
-	return 0
+class Rat:
+	# the rat to be controlled
+	def __init__(self, maze):
+		self.ratPos = maze.getStart()
 
-def getMoves():
-	return 0
+	def getPos(self):
+		return self.ratPos
+
+	def getMoves(self):
+		return 0
 	
-def move()
-	return 0
+	def move(self):
+		return 0
 
 if __name__ == "__main__":
-	return 0
+	print("rat run")

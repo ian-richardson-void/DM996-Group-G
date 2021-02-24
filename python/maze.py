@@ -2,215 +2,220 @@ import random
 from colorama import init
 from colorama import Fore, Back, Style
 
-# GLOBALS
-path_char = 'P'
-wall_char = 'W'
-unvisited = 'U'
-start_char = 'S'
-exit_char = 'E'
-rat_char = 'R'
-
-##################
-# USABLE METHODS #
-##################
-
-def genBoard(w, h):
-	# INIT
-	board = [unvisited]*h
-	for i in range(h):
-		board[i] = [unvisited]*w
+class Maze:
+	# GLOBALS
+	path_char = 'P'
+	wall_char = 'W'
+	unvisited = 'U'
+	start_char = 'S'
+	exit_char = 'E'
+	rat_char = 'R'
 	
-	# POPULATE
-	starting_h = random.randrange(1,h-1)
-	starting_w = random.randrange(1,w-1)
-	board[starting_h][starting_w] = path_char
+	def __init__(self, w, h):
+		print(w, h)
+		self.board = self.genBoard(w, h)
 	
-	walls = [] # list of coords of the walls positions
-	for i in range(starting_h-1, starting_h+2, 2):
-		walls.append([i,starting_w])
-		board[i][starting_w] = wall_char
-	for i in range(starting_w-1, starting_w+2, 2):
-		walls.append([starting_h,i])
-		board[starting_h][i] = wall_char
-		
-	board = wallLoop(board, w, h, walls)
-	return board
-
-def printBoard(board):
-	for i in range(len(board)):
-		for j in range(len(board[i])):
-			if(board[i][j] == unvisited):
-				print(Fore.WHITE + str(board[i][j]), end=" ")
-			elif(board[i][j] == path_char):
-				print(Fore.GREEN + str(board[i][j]), end=" ")
-			elif(board[i][j] == start_char or board[i][j] == exit_char):
-				print(Fore.YELLOW + str(board[i][j]), end=" ")
-			elif(board[i][j] == wall_char):
-				print(Fore.RED + str(board[i][j]), end=" ")
-			elif(board[i][j] == rat_char):
-				print(Fore.BLUE + str(board[i][j]), end=" ")
-		print('\n', end="")
-	print("")
-
-def getStart(board):
-	for i in range(len(board[0])):
-		if (board[0][i] == start_char):
-			return [0, i]
-	return -1
+	##################
+	# USABLE METHODS #
+	##################
 	
-def getExit(board):
-	h = len(board)-1
-	for i in range(len(board[h])):
-		if (board[h][i] == exit_char):
-			return [h, i]
-	return -1
+	def genBoard(self, w, h):
+		# INIT
+		self.board = [self.unvisited]*h
+		for i in range(h):
+			self.board[i] = [self.unvisited]*w
 
-###################
-# PRIVATE METHODS #
-###################
-
-def wallLoop(board, w, h, walls):
-	while walls:
-		# pick random wall from list
-		rand_wall = walls[random.randrange(0,len(walls))]
+		# POPULATE
+		starting_h = random.randrange(1,h-1)
+		starting_w = random.randrange(1,w-1)
+		self.board[starting_h][starting_w] = self.path_char
 		
-		# check if it is NOT a left wall
-		if (rand_wall[1] != 0):
-			if (board[rand_wall[0]][rand_wall[1]-1] == unvisited) and (board[rand_wall[0]][rand_wall[1]+1] == path_char):
-				s_paths = surroundingPaths(rand_wall,board,w,h)
-				# if wall has too few path surrounding, break rand_wall and replace with a path
-				if (s_paths < 2):
-					board[rand_wall[0]][rand_wall[1]] = path_char
-					board, walls = addUpperWall(board,walls,rand_wall,w,h)
-					board, walls = addBottomWall(board,walls,rand_wall,w,h)
-					board, walls = addLeftWall(board,walls,rand_wall,w,h)
-				# Delete wall
-				for wall in walls:
-					if (wall[0] == rand_wall[0] and wall[1] == rand_wall[1]):
-						walls.remove(wall)
-				continue
-		
-		# NOT Upper wall
-		if rand_wall[0] != 0:
-			if (board[rand_wall[0]-1][rand_wall[1]] == unvisited) and (board[rand_wall[0]+1][rand_wall[1]] == path_char):
-				s_paths = surroundingPaths(rand_wall,board,w,h)
-				# if wall has too few path surrounding, break rand_wall and replace with a path
-				if (s_paths < 2):
-					board[rand_wall[0]][rand_wall[1]] = path_char
-					board, walls = addUpperWall(board,walls,rand_wall,w,h)
-					board, walls = addLeftWall(board,walls,rand_wall,w,h)
-					board, walls = addRightWall(board,walls,rand_wall,w,h)
-				# Delete wall
-				for wall in walls:
-					if (wall[0] == rand_wall[0] and wall[1] == rand_wall[1]):
-						walls.remove(wall)
-				continue
+		walls = [] # list of coords of the walls positions
+		for i in range(starting_h-1, starting_h+2, 2):
+			walls.append([i,starting_w])
+			self.board[i][starting_w] = self.wall_char
+		for i in range(starting_w-1, starting_w+2, 2):
+			walls.append([starting_h,i])
+			self.board[starting_h][i] = self.wall_char
 			
-		# NOT Bottom wall
-		if (rand_wall[0] != h-1):
-			if (board[rand_wall[0]+1][rand_wall[1]] == unvisited) and (board[rand_wall[0]-1][rand_wall[1]] == path_char):
-				s_paths = surroundingPaths(rand_wall,board,w,h)
-				# if wall has too few path surrounding, break rand_wall and replace with a path
-				if (s_paths < 2):
-					board[rand_wall[0]][rand_wall[1]] = path_char
-					board, walls = addBottomWall(board,walls,rand_wall,w,h)
-					board, walls = addLeftWall(board,walls,rand_wall,w,h)
-					board, walls = addRightWall(board,walls,rand_wall,w,h)
-				# Delete wall
-				for wall in walls:
-					if (wall[0] == rand_wall[0] and wall[1] == rand_wall[1]):
-						walls.remove(wall)
-				continue
-				
-		# NOT Right wall
-		if rand_wall[1] != w-1:
-			if board[rand_wall[0]][rand_wall[1]+1] == unvisited and board[rand_wall[0]][rand_wall[1]-1] == path_char:
-				s_paths = surroundingPaths(rand_wall,board,w,h)
-				# if wall has too few path surrounding, break rand_wall and replace with a path
-				if (s_paths < 2):
-					board[rand_wall[0]][rand_wall[1]] = path_char
-					board, walls = addBottomWall(board,walls,rand_wall,w,h)
-					board, walls = addUpperWall(board,walls,rand_wall,w,h)
-					board, walls = addRightWall(board,walls,rand_wall,w,h)
-				# Delete wall
-				for wall in walls:
-					if (wall[0] == rand_wall[0] and wall[1] == rand_wall[1]):
-						walls.remove(wall)
-				continue
+		self.board = self.wallLoop(w, h, walls)
+		return self.board
+	
+	def printBoard(self, ratPos):
+		init()
+		for i in range(len(self.board)):
+			for j in range(len(self.board[i])):
+				if(ratPos[0] == i and ratPos[1] == j):
+					print(Fore.BLUE + str(self.rat_char), end=" ")
+				elif(self.board[i][j] == self.unvisited):
+					print(Fore.WHITE + str(self.board[i][j]), end=" ")
+				elif(self.board[i][j] == self.path_char):
+					print(Fore.GREEN + str(self.board[i][j]), end=" ")
+				elif(self.board[i][j] == self.start_char or self.board[i][j] == self.exit_char):
+					print(Fore.YELLOW + str(self.board[i][j]), end=" ")
+				elif(self.board[i][j] == self.wall_char):
+					print(Fore.RED + str(self.board[i][j]), end=" ")
+			print('\n', end="")
+		print("")
 		
-		# Delete the wall from the list anyway
-		for wall in walls:
-			if (wall[0] == rand_wall[0] and wall[1] == rand_wall[1]):
-				walls.remove(wall)
+	def getStart(self):
+		for i in range(len(self.board[0])):
+			if (self.board[0][i] == self.start_char):
+				return [0, i]
+		return -1
+		
+	def getExit(self):
+		h = len(self.board)-1
+		for i in range(len(self.board[h])):
+			if (self.board[h][i] == self.exit_char):
+				return [h, i]
+		return -1
+		
+	###################
+	# PRIVATE METHODS #
+	###################
 	
-	# Mark the remaining unvisited cells as walls
-	for i in range(h):
-		for j in range(w):
-			if (board[i][j] == unvisited):
-				board[i][j] = wall_char
+	def wallLoop(self, w, h, walls):
+		while walls:
+			# pick random wall from list
+			rand_wall = walls[random.randrange(0,len(walls))]
+			
+			# check if it is NOT a left wall
+			if (rand_wall[1] != 0):
+				if (self.board[rand_wall[0]][rand_wall[1]-1] == self.unvisited) and (self.board[rand_wall[0]][rand_wall[1]+1] == self.path_char):
+					s_paths = self.surroundingPaths(rand_wall,w,h)
+					# if wall has too few path surrounding, break rand_wall and replace with a path
+					if (s_paths < 2):
+						self.board[rand_wall[0]][rand_wall[1]] = self.path_char
+						walls = self.addUpperWall(walls,rand_wall,w,h)
+						walls = self.addBottomWall(walls,rand_wall,w,h)
+						walls = self.addLeftWall(walls,rand_wall,w,h)
+					# Delete wall
+					for wall in walls:
+						if (wall[0] == rand_wall[0] and wall[1] == rand_wall[1]):
+							walls.remove(wall)
+					continue
+			
+			# NOT Upper wall
+			if rand_wall[0] != 0:
+				if (self.board[rand_wall[0]-1][rand_wall[1]] == self.unvisited) and (self.board[rand_wall[0]+1][rand_wall[1]] == self.path_char):
+					s_paths = self.surroundingPaths(rand_wall,w,h)
+					# if wall has too few path surrounding, break rand_wall and replace with a path
+					if (s_paths < 2):
+						self.board[rand_wall[0]][rand_wall[1]] = self.path_char
+						walls = self.addUpperWall(walls,rand_wall,w,h)
+						walls = self.addLeftWall(walls,rand_wall,w,h)
+						walls = self.addRightWall(walls,rand_wall,w,h)
+					# Delete wall
+					for wall in walls:
+						if (wall[0] == rand_wall[0] and wall[1] == rand_wall[1]):
+							walls.remove(wall)
+					continue
+				
+			# NOT Bottom wall
+			if (rand_wall[0] != h-1):
+				if (self.board[rand_wall[0]+1][rand_wall[1]] == self.unvisited) and (self.board[rand_wall[0]-1][rand_wall[1]] == self.path_char):
+					s_paths = self.surroundingPaths(rand_wall,w,h)
+					# if wall has too few path surrounding, break rand_wall and replace with a path
+					if (s_paths < 2):
+						self.board[rand_wall[0]][rand_wall[1]] = self.path_char
+						walls = self.addBottomWall(walls,rand_wall,w,h)
+						walls = self.addLeftWall(walls,rand_wall,w,h)
+						walls = self.addRightWall(walls,rand_wall,w,h)
+					# Delete wall
+					for wall in walls:
+						if (wall[0] == rand_wall[0] and wall[1] == rand_wall[1]):
+							walls.remove(wall)
+					continue
+					
+			# NOT Right wall
+			if rand_wall[1] != w-1:
+				if self.board[rand_wall[0]][rand_wall[1]+1] == self.unvisited and self.board[rand_wall[0]][rand_wall[1]-1] == self.path_char:
+					s_paths = self.surroundingPaths(rand_wall,w,h)
+					# if wall has too few path surrounding, break rand_wall and replace with a path
+					if (s_paths < 2):
+						self.board[rand_wall[0]][rand_wall[1]] = self.path_char
+						walls = self.addBottomWall(walls,rand_wall,w,h)
+						walls = self.addUpperWall(walls,rand_wall,w,h)
+						walls = self.addRightWall(walls,rand_wall,w,h)
+					# Delete wall
+					for wall in walls:
+						if (wall[0] == rand_wall[0] and wall[1] == rand_wall[1]):
+							walls.remove(wall)
+					continue
+			
+			# Delete the wall from the list anyway
+			for wall in walls:
+				if (wall[0] == rand_wall[0] and wall[1] == rand_wall[1]):
+					walls.remove(wall)
+		
+		# Mark the remaining unvisited cells as walls
+		for i in range(h):
+			for j in range(w):
+				if (self.board[i][j] == self.unvisited):
+					self.board[i][j] = self.wall_char
 
-	# Set entrance and exit
-	for i in range(w):
-		if (board[1][i] == path_char):
-			board[0][i] = rat_char
-			break
+		# Set entrance and exit
+		for i in range(w):
+			if (self.board[1][i] == self.path_char):
+				self.board[0][i] = self.start_char
+				break
 
-	for i in range(w-1, 0, -1):
-		if (board[h-2][i] == path_char):
-			board[h-1][i] = exit_char
-			break
-	
-	return board
-	
-def surroundingPaths(rand_wall,board,w,h):
-	s_paths = 0
-	if (rand_wall[0] != 0) and (board[rand_wall[0]-1][rand_wall[1]] == path_char):
-		s_paths += 1
-	if (rand_wall[0] != h-1) and (board[rand_wall[0]+1][rand_wall[1]] == path_char):
-		s_paths += 1
-	if (rand_wall[1] != 0) and (board[rand_wall[0]][rand_wall[1]-1] == path_char):
-		s_paths += 1
-	if (rand_wall[1] != w-1) and (board[rand_wall[0]][rand_wall[1]+1] == path_char):
-		s_paths += 1
-	return s_paths
-	
-def addUpperWall(board,walls,rand_wall,w,h):
-	# Upper cell
-	if (rand_wall[0] != 0):
-		if (board[rand_wall[0]-1][rand_wall[1]] != path_char):
-			board[rand_wall[0]-1][rand_wall[1]] = wall_char
-		if ([rand_wall[0]-1, rand_wall[1]] not in walls):
-			walls.append([rand_wall[0]-1, rand_wall[1]])
-	return (board, walls)
-	
-def addBottomWall(board,walls,rand_wall,w,h):
-	# Bottom cell
-	if (rand_wall[0] != h-1):
-		if (board[rand_wall[0]+1][rand_wall[1]] != path_char):
-			board[rand_wall[0]+1][rand_wall[1]] = wall_char
-		if ([rand_wall[0]+1, rand_wall[1]] not in walls):
-			walls.append([rand_wall[0]+1, rand_wall[1]])
-	return (board, walls)
+		for i in range(w-1, 0, -1):
+			if (self.board[h-2][i] == self.path_char):
+				self.board[h-1][i] = self.exit_char
+				break
+		
+		return self.board
+		
+	def surroundingPaths(self, rand_wall,w,h):
+		s_paths = 0
+		if (rand_wall[0] != 0) and (self.board[rand_wall[0]-1][rand_wall[1]] == self.path_char):
+			s_paths += 1
+		if (rand_wall[0] != h-1) and (self.board[rand_wall[0]+1][rand_wall[1]] == self.path_char):
+			s_paths += 1
+		if (rand_wall[1] != 0) and (self.board[rand_wall[0]][rand_wall[1]-1] == self.path_char):
+			s_paths += 1
+		if (rand_wall[1] != w-1) and (self.board[rand_wall[0]][rand_wall[1]+1] == self.path_char):
+			s_paths += 1
+		return s_paths
+		
+	def addUpperWall(self, walls,rand_wall,w,h):
+		# Upper cell
+		if (rand_wall[0] != 0):
+			if (self.board[rand_wall[0]-1][rand_wall[1]] != self.path_char):
+				self.board[rand_wall[0]-1][rand_wall[1]] = self.wall_char
+			if ([rand_wall[0]-1, rand_wall[1]] not in walls):
+				walls.append([rand_wall[0]-1, rand_wall[1]])
+		return walls
+		
+	def addBottomWall(self, walls,rand_wall,w,h):
+		# Bottom cell
+		if (rand_wall[0] != h-1):
+			if (self.board[rand_wall[0]+1][rand_wall[1]] != self.path_char):
+				self.board[rand_wall[0]+1][rand_wall[1]] = self.wall_char
+			if ([rand_wall[0]+1, rand_wall[1]] not in walls):
+				walls.append([rand_wall[0]+1, rand_wall[1]])
+		return walls
 
-def addLeftWall(board,walls,rand_wall,w,h):
-	# Left cell
-	if (rand_wall[1] != 0):	
-		if (board[rand_wall[0]][rand_wall[1]-1] != path_char):
-			board[rand_wall[0]][rand_wall[1]-1] = wall_char
-		if ([rand_wall[0], rand_wall[1]-1] not in walls):
-			walls.append([rand_wall[0], rand_wall[1]-1])
-	return (board, walls)
+	def addLeftWall(self, walls,rand_wall,w,h):
+		# Left cell
+		if (rand_wall[1] != 0):	
+			if (self.board[rand_wall[0]][rand_wall[1]-1] != self.path_char):
+				self.board[rand_wall[0]][rand_wall[1]-1] = self.wall_char
+			if ([rand_wall[0], rand_wall[1]-1] not in walls):
+				walls.append([rand_wall[0], rand_wall[1]-1])
+		return walls
 	
-def addRightWall(board,walls,rand_wall,w,h):
-	# Right cell
-	if (rand_wall[1] != 0):	
-		if (board[rand_wall[0]][rand_wall[1]+1] != path_char):
-			board[rand_wall[0]][rand_wall[1]+1] = wall_char
-		if ([rand_wall[0], rand_wall[1]+1] not in walls):
-			walls.append([rand_wall[0], rand_wall[1]-1])
-	return (board, walls)
+	def addRightWall(self, walls,rand_wall,w,h):
+		# Right cell
+		if (rand_wall[1] != 0):	
+			if (self.board[rand_wall[0]][rand_wall[1]+1] != self.path_char):
+				self.board[rand_wall[0]][rand_wall[1]+1] = self.wall_char
+			if ([rand_wall[0], rand_wall[1]+1] not in walls):
+				walls.append([rand_wall[0], rand_wall[1]-1])
+		return walls
 
 if(__name__ == "__main__"):
-	init()
-	board = genBoard(10, 10)
-	printBoard(board)
+	board = Maze(10, 10)
+	board.printBoard(board.getStart())
