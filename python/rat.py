@@ -14,7 +14,7 @@ class Rat:
 
 	def getPos(self):
 		return self.ratPos
-
+		
 	def getMoves(self):
 		# CHECK CELLS SURROUNDING
 		# returns a list of L, R, U or D
@@ -34,11 +34,36 @@ class Rat:
 		return moves
 	
 	def move(self, d):
-		if(d == self.up_char and self.maze.board[self.ratPos[0]-1][self.ratPos[1]] == self.maze.path_char):
-			self.ratPos = [self.ratPos[0]-1, self.ratPos[1]]
-		if(d == self.down_char and self.maze.board[self.ratPos[0]+1][self.ratPos[1]] == self.maze.path_char):
-			self.ratPos = [self.ratPos[0]+1, self.ratPos[1]]
-		if(d == self.left_char and self.maze.board[self.ratPos[0]][self.ratPos[1]-1] == self.maze.path_char):
-			self.ratPos = [self.ratPos[0], self.ratPos[1]-1]
-		if(d == self.right_char and self.maze.board[self.ratPos[0]][self.ratPos[1]+1] == self.maze.path_char):
-			self.ratPos = [self.ratPos[0], self.ratPos[1]+1]
+		if(d == self.up_char):
+			newpos = [self.ratPos[0]-1, self.ratPos[1]]
+			if(self.maze.board[newpos[0]][newpos[1]] == self.maze.path_char):
+				self.ratPos = newpos
+				return True
+			elif(self.maze.board[newpos[0]][newpos[1]] == self.maze.exit_char):
+				self.ratPos = newpos
+				return False
+		if(d == self.down_char):
+			newpos = [self.ratPos[0]+1, self.ratPos[1]]
+			if(self.maze.board[newpos[0]][newpos[1]] == self.maze.path_char):
+				self.ratPos = newpos
+				return True
+			elif(self.maze.board[newpos[0]][newpos[1]] == self.maze.exit_char):
+				self.ratPos = newpos
+				return False
+		if(d == self.left_char):
+			newpos = [self.ratPos[0], self.ratPos[1]-1]
+			if(self.maze.board[newpos[0]][newpos[1]] == self.maze.path_char):
+				self.ratPos = newpos
+				return True
+			elif(self.maze.board[newpos[0]][newpos[1]] == self.maze.exit_char):
+				self.ratPos = newpos
+				return False
+		if(d == self.right_char):
+			newpos = [self.ratPos[0], self.ratPos[1]+1]
+			if(self.maze.board[newpos[0]][newpos[1]] == self.maze.path_char):
+				self.ratPos = newpos
+				return True
+			elif(self.maze.board[newpos[0]][newpos[1]] == self.maze.exit_char):
+				self.ratPos = newpos
+				return False
+		return False
