@@ -23,7 +23,7 @@ class Maze:
 		self.board = [self.unvisited]*h
 		for i in range(h):
 			self.board[i] = [self.unvisited]*w
-
+		
 		# POPULATE
 		starting_h = random.randrange(1,h-1)
 		starting_w = random.randrange(1,w-1)
@@ -36,7 +36,7 @@ class Maze:
 		for i in range(starting_w-1, starting_w+2, 2):
 			walls.append([starting_h,i])
 			self.board[starting_h][i] = self.wall_char
-			
+		
 		self.board = self.wallLoop(w, h, walls)
 		return self.board
 	
@@ -147,6 +147,7 @@ class Maze:
 			for wall in walls:
 				if (wall[0] == rand_wall[0] and wall[1] == rand_wall[1]):
 					walls.remove(wall)
+			
 		
 		# Mark the remaining unvisited cells as walls
 		for i in range(h):
@@ -217,4 +218,4 @@ class Maze:
 
 if(__name__ == "__main__"):
 	board = Maze(10, 10)
-	board.printBoard(board.getStart())
+	board.printBoard([-1, -1])

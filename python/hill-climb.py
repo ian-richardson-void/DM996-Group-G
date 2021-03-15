@@ -16,7 +16,7 @@ def move(rat):
 def fitness(rat):
 	ratPos = rat.getPos()
 	exit = rat.maze.getExit()
-	coordiff = [exit[0] - ratPos[0], exit[1] - ratPos[1]]
+	coordiff = [abs(exit[0] - ratPos[0]), abs(exit[1] - ratPos[1])]
 	return coordiff
 
 if __name__ == "__main__":

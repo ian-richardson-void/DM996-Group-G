@@ -20,16 +20,20 @@ class Rat:
 		# returns a list of L, R, U or D
 		moves = []
 		if(self.ratPos[0] != 0):
-			if(self.maze.board[self.ratPos[0]-1][self.ratPos[1]] == self.maze.path_char):
+			nextChar = self.maze.board[self.ratPos[0]-1][self.ratPos[1]]
+			if(nextChar == self.maze.path_char or nextChar == self.maze.exit_char):
 				moves.append(self.up_char)
 		if(self.ratPos[0] != len(self.maze.board)-1):
-			if(self.maze.board[self.ratPos[0]+1][self.ratPos[1]] == self.maze.path_char):
+			nextChar = self.maze.board[self.ratPos[0]+1][self.ratPos[1]]
+			if(nextChar == self.maze.path_char or nextChar == self.maze.exit_char):
 				moves.append(self.down_char)
 		if(self.ratPos[1] != 0):
-			if(self.maze.board[self.ratPos[0]][self.ratPos[1]-1] == self.maze.path_char):
+			nextChar = self.maze.board[self.ratPos[0]][self.ratPos[1]-1]
+			if(nextChar == self.maze.path_char or nextChar == self.maze.exit_char):
 				moves.append(self.left_char)
 		if(self.ratPos[1] != len(self.maze.board[0])-1):
-			if(self.maze.board[self.ratPos[0]][self.ratPos[1]+1] == self.maze.path_char):
+			nextChar = self.maze.board[self.ratPos[0]][self.ratPos[1]+1]
+			if(nextChar == self.maze.path_char or nextChar == self.maze.exit_char):
 				moves.append(self.right_char)
 		return moves
 	
@@ -67,3 +71,14 @@ class Rat:
 				self.ratPos = newpos
 				return False
 		return False
+		
+	def reset(self):
+		self.ratPos = self.maze.getStart()
+		return True
+		
+	def tempMove(self, m):
+		old = self.getPos()
+		self.move(m)
+		new = self.getPos()
+		self.ratPos = old
+		return new
