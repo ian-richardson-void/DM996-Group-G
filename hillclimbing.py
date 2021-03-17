@@ -10,7 +10,7 @@ import numpy as np
 import random
 
 def update():
-      
+    gradient_history = []
     for i in range(30):
         gradients = []
         
@@ -21,28 +21,25 @@ def update():
                 gradients.append(gradient)
             
             else:
-                gradient = -s[0]-s[1]-s[2]-s[3]
+                gradient = -(s[0]+15)-(s[1]+15)
                 gradients.append(gradient)
                 
-        print(gradients)      
-        action = gradients.index(min(gradients))
+        gradient_history.append(min(gradients)) 
+        action = [i for i in range(len(gradients)) if gradients[i] == min(gradients)]
+        print(gradients)
         
-        print(action)
-        if isinstance(action,list):
-            env.render()
-            s_, done_ = env.step(random.choice(action))
-            if s_ == 'termimus':
+        env.render()
+        s_, done_ = env.step(random.choice(action))
+        if s_ == 'termimus':
                     print('game over')
                     break
 
-        else:
-            env.render()
-            s_, done_ = env.step(action)  
-            if s_ == 'termimus':
-                    print('game over')
-                    break
-            
-            
+    fig, axs = plt.subplots()
+    axs.set_xlabel('steps')
+    axs.set_ylabel('gradient')
+    axs.set_xticks(range(0,len(gradient_history),1))
+    axs.set_title('steps vs gradient')      
+    plt.plot(gradient_history)   
         
 
 if __name__ == "__main__":
