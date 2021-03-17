@@ -12,6 +12,8 @@ class Maze:
 	rat_char = 'R'
 	
 	def __init__(self, w, h):
+		self.width = w
+		self.hight = h
 		self.board = self.genBoard(w, h)
 	
 	##################
