@@ -48,16 +48,16 @@ class Maze:
 			for j in range(len(self.board[i])):
 				if(ratPos[0] == i and ratPos[1] == j):
 					print(Fore.BLUE + str(self.rat_char), end=" ")
-				elif(self.board[i][j] == self.unvisited):
-					print(Fore.WHITE + str(self.board[i][j]), end=" ")
 				elif(self.board[i][j] == self.path_char):
 					print(Fore.GREEN + str(self.board[i][j]), end=" ")
 				elif(self.board[i][j] == self.start_char or self.board[i][j] == self.exit_char):
 					print(Fore.YELLOW + str(self.board[i][j]), end=" ")
 				elif(self.board[i][j] == self.wall_char):
 					print(Fore.RED + str(self.board[i][j]), end=" ")
+				elif(self.board[i][j] == self.unvisited):
+					print(Fore.WHITE + str(self.board[i][j]), end=" ")
 			print('\n', end="")
-		print("")
+		print(Fore.WHITE + "")
 		
 	def getStart(self):
 		for i in range(len(self.board[0])):

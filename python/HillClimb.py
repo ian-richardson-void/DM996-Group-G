@@ -1,5 +1,6 @@
 import maze
 import rat
+
 # Hill-climb will have a fitness function (end - ratPos) 
 # and will move the rat a step towards the end each turn
 
@@ -18,13 +19,17 @@ def fitness(rat):
 	exit = rat.maze.getExit()
 	coordiff = [abs(exit[0] - ratPos[0]), abs(exit[1] - ratPos[1])]
 	return coordiff
-
-if __name__ == "__main__":
+	
+def run(maze):
 	print("RUNNING HILL-CLIMB OPTIMISATION")
-	barry = rat.Rat(maze.Maze(15, 15))
+	barry = rat.Rat(maze)
 	barry.maze.printBoard(barry.getPos())
 	while(True):
 		result = move(barry)
 		if(result == False):
+			print("STUCK")
 			break
 	barry.maze.printBoard(barry.getPos())
+
+if __name__ == "__main__":
+	run(maze.Maze(15, 15))

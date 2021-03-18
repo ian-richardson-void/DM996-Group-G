@@ -2,6 +2,10 @@ import maze
 import rat
 import random
 
+# make lots of random moves when in high temp
+# when half way to the exit OR a certain time is up, switch to low temp
+# move slowly towards exit in low temp
+
 def highTemp(rat):
 	legalMoves = rat.getMoves()
 	m = 0
@@ -26,31 +30,26 @@ def fitness(rat, newpos):
 	exit = rat.maze.getExit()
 	coordiff = [abs(exit[0] - newpos[0]), abs(exit[1] - newpos[1])]
 	return coordiff
-
-if __name__ == "__main__":
+	
+def run(maze):
 	print("RUNNING SIMULATED ANNEALING")
-	barry = rat.Rat(maze.Maze(15, 15))
+	barry = rat.Rat(maze)
 	barry.maze.printBoard(barry.getPos())
-	# make lots of random moves when in high temp
-	# when half way to the exit, switch to low temp
-	# move slowly towards exit in low temp
 	t = 0
 	while(True):
 		# high temp loop
 		if(t >= 35):
-			print("TIME EXPIRED< MOVING TO LOW TEMP")
+			print("TIME EXPIRED, MOVING TO LOW TEMP")
 			break
-		barry.maze.printBoard(barry.getPos())
 		coordiff = fitness(barry, barry.getPos())
 		if(coordiff[0] <= barry.maze.hight/2 and coordiff[1] <= barry.maze.width/2):
 			print("HALF-WAY, CHANGING TO LOW TEMP")
 			break
 		highTemp(barry)
 		t += 1
-	
+	barry.maze.printBoard(barry.getPos())
 	while(True):
 		# low temp loop
-		barry.maze.printBoard(barry.getPos())
 		result, notStuck = lowTemp(barry)
 		if((result == False) and (notStuck == True)):
 			# we have reached the exit (or made an illegal move, shouldnt be possible)
@@ -58,5 +57,7 @@ if __name__ == "__main__":
 			break
 		if(notStuck == False):
 			break
-		
 	barry.maze.printBoard(barry.getPos())
+
+if __name__ == "__main__":
+	run(maze.Maze(15, 15))
