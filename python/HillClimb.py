@@ -5,19 +5,25 @@ import rat
 # and will move the rat a step towards the end each turn
 
 def move(rat):
-	coordiff = fitness(rat)
-	if(coordiff[0] > coordiff[1]):
-		return rat.move(rat.down_char)
-	elif(coordiff[0] <= coordiff[1]):
-		if(coordiff[1] > 0):
-			return rat.move(rat.right_char)
-		elif(coordiff[1] <= 0):
-			return rat.move(rat.left_char)
+	stuck, move = checkStuck(rat)
+	if(stuck == False):
+		result = rat.move(move)
+		return result, True
+	else:
+		return False, False
+	
+def checkStuck(rat):
+	bm = fitness(rat, rat.getPos())
+	for p in rat.getMoves():
+		am = fitness(rat, rat.tempMove(p))
+		if(bm[0] >= am[0] and bm[1] >= am[1]):
+			return False, p
+	print("STUCK")
+	return True, 0
 
-def fitness(rat):
-	ratPos = rat.getPos()
+def fitness(rat, newpos):
 	exit = rat.maze.getExit()
-	coordiff = [abs(exit[0] - ratPos[0]), abs(exit[1] - ratPos[1])]
+	coordiff = [abs(exit[0] - newpos[0]), abs(exit[1] - newpos[1])]
 	return coordiff
 	
 def run(maze):
@@ -25,9 +31,12 @@ def run(maze):
 	barry = rat.Rat(maze)
 	barry.maze.printBoard(barry.getPos())
 	while(True):
-		result = move(barry)
-		if(result == False):
-			print("STUCK")
+		result, notStuck = move(barry)
+		if((result == False) and (notStuck == True)):
+			# we have reached the exit (or made an illegal move, shouldnt be possible)
+			print("REACHED EXIT")
+			break
+		if(notStuck == False):
 			break
 	barry.maze.printBoard(barry.getPos())
 

@@ -17,14 +17,21 @@ def highTemp(rat):
 	return m, result
 	
 def lowTemp(rat):
+	stuck, move = checkStuck(rat)
+	if(stuck == False):
+		result = rat.move(move)
+		return result, True
+	else:
+		return False, False
+	
+def checkStuck(rat):
 	bm = fitness(rat, rat.getPos())
 	for p in rat.getMoves():
 		am = fitness(rat, rat.tempMove(p))
 		if(bm[0] >= am[0] and bm[1] >= am[1]):
-			result = rat.move(p)
-			return result, True
+			return False, p
 	print("STUCK")
-	return False, False
+	return True, 0
 	
 def fitness(rat, newpos):
 	exit = rat.maze.getExit()
@@ -35,10 +42,11 @@ def run(maze):
 	print("RUNNING SIMULATED ANNEALING")
 	barry = rat.Rat(maze)
 	barry.maze.printBoard(barry.getPos())
+	# high temp loop
 	t = 0
+	expired = 40 # no. of iterations before auto-move on
 	while(True):
-		# high temp loop
-		if(t >= 35):
+		if(t >= expired):
 			print("TIME EXPIRED, MOVING TO LOW TEMP")
 			break
 		coordiff = fitness(barry, barry.getPos())
@@ -48,8 +56,9 @@ def run(maze):
 		highTemp(barry)
 		t += 1
 	barry.maze.printBoard(barry.getPos())
+	
+	# low temp loop
 	while(True):
-		# low temp loop
 		result, notStuck = lowTemp(barry)
 		if((result == False) and (notStuck == True)):
 			# we have reached the exit (or made an illegal move, shouldnt be possible)
