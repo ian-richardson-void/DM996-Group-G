@@ -1,4 +1,4 @@
-import maze
+import backend.maze
 
 class Rat:
 	# GLOBALS

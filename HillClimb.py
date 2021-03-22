@@ -1,5 +1,5 @@
-import maze
-import rat
+import backend.maze as maze
+import backend.rat as rat
 
 # Hill-climb will have a fitness function (end - ratPos) 
 # and will move the rat a step towards the end each turn

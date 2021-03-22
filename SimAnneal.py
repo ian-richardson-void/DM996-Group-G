@@ -1,5 +1,5 @@
-import maze
-import rat
+import backend.maze as maze
+import backend.rat as rat
 import random
 
 # make lots of random moves when in high temp
